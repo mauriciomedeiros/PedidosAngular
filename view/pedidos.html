@@ -1,0 +1,65 @@
+<div class="jumbotron">
+	<accordion title="Aguá - R$3,00">
+		Garrafa de 500ml da marca Nestlé
+	</accordion>
+		<h3 class="text-center"><span class="fa fa-phone"></span> {{'Pedidos On-Line' | exclamation:10}}</h3>
+		<hr/>
+		<input class="form-control" type="text" ng-model="criteria" placeholder="O que você está buscando?"/>
+		<table class="table table-striped">
+			<tr>
+				<th>Descrição <span style="cursor: pointer" ng-show="reverse" ng-click="field='descricao';reverse=!reverse" class="fa fa-caret-up"></span><span style="cursor: pointer" ng-hide="reverse" ng-click="field='descricao';reverse=!reverse" class="fa fa-caret-down"></span></th>
+				<th>Preço</th>
+			</tr>
+			<tr ng-repeat="item in cardapio | filter:criteria | orderBy:field:reverse">
+				<td>{{item.descricao}}</td>
+				<td>{{item.preco | currency}}</td>
+			</tr>
+		</table>
+		<div ng-show="pedidos.length > 0">
+			<h3>Pedidos</h3>
+			<table class="table table-striped">
+				<tr>
+					<th>Quantidade</th>
+					<th>Item</th>
+					<th>Subtotal</th>
+					<th>Data</th>
+					<th></th>
+				</tr>
+				<tr ng-repeat="pedido in pedidos">
+					<td>{{pedido.quantidade}}</td>
+					<td>{{pedido.item.descricao}}</td>
+					<td>{{pedido.subtotal | currency}}</td>
+					<td>{{pedido.data | date:'dd/MM/yyyy HH:mm'}}</td>
+					<td><button class="btn btn-danger" ng-click="cancelarPedido(pedido)">Cancelar</button></td>
+				</tr>
+			</table>
+			<h5>Valor Total {{total | currency}}</h5>
+		</div>
+		<form name="pedidoForm">
+			<input class="form-control" type="number" ng-model="pedido.quantidade" name="quantidade" ng-model-options="{updateOn: 'blur'}" placeholder="Quantidade" ng-required="true" min="1" max="10"/>
+			<select class="form-control" ng-model="pedido.item" name="item" ng-options="item.descricao for item in cardapio" ng-required="true">
+				<option value="">Selecione um item</option>
+			</select>
+			<div style="position: relative">	
+				<input ng-class="{error: pedidoForm.telefone.$invalid && pedidoForm.telefone.$dirty}" class="form-control" type="text" ng-model="pedido.telefone" name="telefone" placeholder="Telefone" ng-required="true" ng-pattern="/^\d{4,5}-\d{4}$/"/>
+				<span ng-show="pedidoForm.telefone.$invalid && pedidoForm.telefone.$dirty" class="fa fa-times" style="color: #AA0000; position: absolute; top: 10px; right: 10px"></span>
+				<span ng-show="pedidoForm.telefone.$valid" class="fa fa-check" style="color: #00AA00; position: absolute; top: 10px; right: 10px"></span>
+			</div>
+		</form>
+		<div ng-show="pedidoForm.quantidade.$error.required && pedidoForm.quantidade.$dirty" class="alert alert-danger">
+			Por favor, preencha a quantidade
+		</div>
+		<div ng-show="pedidoForm.item.$invalid && pedidoForm.item.$dirty" class="alert alert-danger">
+			Por favor, selecione o item desejado
+		</div>
+		<div ng-show="pedidoForm.telefone.$error.pattern && pedidoForm.telefone.$dirty" class="alert alert-danger">
+			O formato do telefone é XXXXX-XXXX
+		</div>
+		<div ng-show="pedidoForm.quantidade.$error.min && pedidoForm.quantidade.$dirty" class="alert alert-danger">
+			A quantidade mínima é 1
+		</div>
+		<div ng-show="pedidoForm.quantidade.$error.max && pedidoForm.quantidade.$dirty" class="alert alert-danger">
+			A quantidade máxima é 10
+		</div>
+		<button class="btn btn-primary btn-block" ng-click="adicionarPedido(pedido)" ng-disabled="pedidoForm.$invalid">Adicionar Pedido</button>
+	</div>
